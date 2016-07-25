@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">物联网平台</string>
+    <string name="common_loading_message">数据正在加载...</string>
+    <string name="common_load_message">正在下载最新版本</string>
+    <string name="no_sdcard">没有存储卡</string>
+    <string name="no_network">网络不可用,请检查网络</string>
+    <string name="sd_smallsize">存储空间不足</string>
+    <string name="common_empty_msg">Oops, failed to resolve data\nPlease hit the screen and try again~</string>
+    <string name="common_error_msg">Oops, something wrong!\nPlease hit the screen and try again~</string>
+    <string name="common_no_network_msg">No network connected!\nPlease hit the screen and try again after connecting~</string>
+    <string name="home_header_title">物联网平台</string>
+    <string name="button_login_name">登录</string>
+    <string name="login_pwd_empty">密码不能为空</string>
+    <string name="login_uname_empty">用户名不能为空</string>
+    <string name="house_location_header_title">库房查询</string>
+    <string name="house_location_detail_header_title">库位列表</string>
+    <string name="request_url">配置服务器请求</string>
+    <string name="logout">注销</string>
+    <string name="login_out">退出登录</string>
+    <string name="logout_message">退出成功</string>
+    <string name="settings_title">功能设置</string>
+    <string name="book_out_header_title">出库列表</string>
+    <string name="book_out_header_detail_title">出库列表详情</string>
+    <string name="book_in_header_title">入库列表</string>
+    <string name="book_in_header_detail_title">入库列表详情</string>
+    <string name="book_button_text_out">开始扫描</string>
+    <string name="book_button_text_stop">停止扫描</string>
+    <string name="book_button_text_in">开始扫描</string>
+    <string name="storage_location">选择库位</string>
+    <string name="idInventoryFinished_Colon">扫描完成</string>
+    <string name="idInventoryFinished">扫描完成</string>
+    <string name="idInventoryStopped__PleaseMoveTheTagAndTryAgain">扫描已停止,或者重试再试</string>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/record_bg"
+    android:orientation="horizontal"
+    android:padding="@dimen/common_padding">
+
+    <TextView
+        android:id="@+id/tv_register_code"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="@dimen/common_padding"
+        android:layout_weight="1"
+        android:background="@drawable/login_button"
+        android:gravity="center"
+        android:text="注册码"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_service_address"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:background="@drawable/login_button"
+        android:gravity="center"
+        android:text="服务器地址"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+</LinearLayout>

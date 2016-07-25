@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:background="@color/alpha_75_blue"
+    android:paddingLeft="@dimen/common_padding"
+    android:paddingRight="@dimen/common_padding"
+    tools:showIn="@layout/store_house_list_activity">
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:background="@drawable/header_back" />
+
+    <TextView
+        android:id="@+id/tv_header_title"
+        style="@style/header_title"
+        android:text="@string/house_location_header_title" />
+</FrameLayout>

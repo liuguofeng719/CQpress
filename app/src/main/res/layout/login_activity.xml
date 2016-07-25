@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_bg"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp">
+
+    <LinearLayout
+        android:id="@+id/ly_login_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="280dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <EditText
+            android:id="@+id/edit_uname"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@null"
+            android:hint="输入用户名"
+            android:singleLine="true"
+            android:text="admin" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#999999" />
+
+        <EditText
+            android:id="@+id/edit_password"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@null"
+            android:hint="输入密码"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:text="123456"
+            android:textColor="@color/text_color"
+            android:textColorHint="@color/text_color_hint" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ly_login_text"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_login_button"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_below="@+id/ly_login_text"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/login_button"
+            android:gravity="center"
+            android:text="@string/button_login_name"
+            android:textColor="@color/white"
+            android:layout_marginRight="@dimen/common_padding"
+            android:textSize="24dp" />
+
+        <TextView
+            android:id="@+id/tv_setting_button"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/login_button"
+            android:gravity="center"
+            android:text="设置"
+            android:textColor="@color/white"
+            android:textSize="24dp" />
+    </LinearLayout>
+
+</RelativeLayout>
