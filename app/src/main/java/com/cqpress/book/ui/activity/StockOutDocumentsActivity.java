@@ -144,7 +144,6 @@ public class StockOutDocumentsActivity extends BaseActivity {
             }
         });
         this.lv_stock_list.setAdapter(listViewDataAdapter);
-
         getStock();
     }
 
@@ -154,6 +153,7 @@ public class StockOutDocumentsActivity extends BaseActivity {
         StockOutRequestVo.RequestData requestData = new StockOutRequestVo.RequestData();
         requestData.setAllot(true);
         requestData.setScanUserId(AppPreferences.getString("userId"));
+        requestData.setDeviceID(AppPreferences.getString("registerCode"));
         stockOutRequestVo.setRequestData(requestData);
         stockOutRequestVo.setReqMethod("AppGetStockOutDocuments");
         stockOutRequestVo.sign();

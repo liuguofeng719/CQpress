@@ -89,7 +89,7 @@ public class StockInDocumentsActivity extends BaseActivity {
                     @Override
                     public void showData(int position, StockInDocumentVo itemData) {
                         tv_stock_in_number.setText(itemData.getStockInNumber());
-                        tv_stock_in_amount.setText("" + itemData.getStockInAmount());
+                        tv_stock_in_amount.setText("" + itemData.getStockInAmount() + "本");
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:ss");
                         try {
                             Date date = sdf.parse(itemData.getStockInDate());
@@ -152,12 +152,12 @@ public class StockInDocumentsActivity extends BaseActivity {
         StockOutRequestVo.RequestData requestData = new StockOutRequestVo.RequestData();
         requestData.setAllot(true);
         requestData.setScanUserId(AppPreferences.getString("userId"));
+        requestData.setDeviceID(AppPreferences.getString("registerCode"));
         stockOutRequestVo.setRequestData(requestData);
         stockOutRequestVo.setReqMethod("AppGetStockInDocuments");
         stockOutRequestVo.sign();
         Call<StockOutResultVo<StockInDocumentVo>> storeHouse = getApis().appGetStockInDocuments(stockOutRequestVo).clone();
         storeHouse.enqueue(new Callback<StockOutResultVo<StockInDocumentVo>>() {
-
             @Override
             public void onResponse(Response<StockOutResultVo<StockInDocumentVo>> response, Retrofit retrofit) {
                 hideLoading();

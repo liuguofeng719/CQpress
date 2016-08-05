@@ -25,7 +25,6 @@ import retrofit.Retrofit;
  */
 public class RegisterActivity extends BaseActivity {
 
-
     @Bind(R.id.edit_register)
     EditText editRegister;
     @Bind(R.id.tv_complete)
@@ -38,6 +37,7 @@ public class RegisterActivity extends BaseActivity {
             CommonUtils.make(this, "请输入注册码");
             return;
         }
+
         mDialog = CommonUtils.showDialog(this, getString(R.string.common_loading_message));
         mDialog.show();
 
@@ -53,9 +53,12 @@ public class RegisterActivity extends BaseActivity {
                 CommonUtils.dismiss(mDialog);
                 if (response.isSuccess() && response.body() != null) {
                     RegisterAppResultVo resultVo = response.body();
-                    if (resultVo.getErrCode() == 0) {
+                    if (!resultVo.isError()) {
+                        CommonUtils.make(RegisterActivity.this, "注册码注册成功");
                         AppPreferences.putString("registerCode", resultVo.getData());
                         readyGoThenKill(LoginActivity.class);
+                    } else {
+                        CommonUtils.make(RegisterActivity.this, "注册码已经注册");
                     }
                 }
             }
@@ -87,5 +90,8 @@ public class RegisterActivity extends BaseActivity {
 
     @Override
     protected void initViewsAndEvents() {
+        if (!TextUtils.isEmpty(AppPreferences.getString("registerCode"))) {
+            editRegister.setText(AppPreferences.getString("registerCode"));
+        }
     }
 }

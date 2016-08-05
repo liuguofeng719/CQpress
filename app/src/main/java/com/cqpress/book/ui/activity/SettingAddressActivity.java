@@ -57,5 +57,8 @@ public class SettingAddressActivity extends BaseActivity {
 
     @Override
     protected void initViewsAndEvents() {
+        if (!TextUtils.isEmpty(AppPreferences.getString("BASE_URL"))) {
+            editRegister.setText(AppPreferences.getString("BASE_URL"));
+        }
     }
 }

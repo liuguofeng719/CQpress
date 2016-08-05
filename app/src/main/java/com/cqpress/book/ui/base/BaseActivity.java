@@ -1,6 +1,7 @@
 package com.cqpress.book.ui.base;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.cqpress.book.BookApplication;
 import com.cqpress.book.api.Apis;
@@ -13,8 +14,9 @@ import retrofit.Retrofit;
 
 public abstract class BaseActivity extends BaseFragmentActivity implements BaseView {
 
-    protected Apis getApis(){
-        Retrofit retrofit = RetrofitUtils.getRfHttpsInstance(AppPreferences.getString("BASE_URL"));
+    protected Apis getApis() {
+        String baseUrl = TextUtils.isEmpty(AppPreferences.getString("BASE_URL")) ? Apis.BASE_URL : AppPreferences.getString("BASE_URL");
+        Retrofit retrofit = RetrofitUtils.getRfHttpsInstance(baseUrl);
         return retrofit.create(Apis.class);
     }
 

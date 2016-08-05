@@ -21,7 +21,7 @@
             android:hint="请输入服务器地址"
             android:gravity="left"
             android:maxLines="100"
-            android:text="http://123.56.67.64:6789/SubDeviceService.svc/rest/" />
+        />
 
         <TextView
             android:id="@+id/tv_complete"

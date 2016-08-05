@@ -24,6 +24,16 @@ public class StockOutRequestVo extends BaseRequestVo {
         private boolean isAllot;
         @SerializedName("ScanUserID")
         private String scanUserId;
+        @SerializedName("DeviceID")
+        private String deviceID;// 当前设备ID
+
+        public String getDeviceID() {
+            return deviceID;
+        }
+
+        public void setDeviceID(String deviceID) {
+            this.deviceID = deviceID;
+        }
 
         public boolean isAllot() {
             return isAllot;

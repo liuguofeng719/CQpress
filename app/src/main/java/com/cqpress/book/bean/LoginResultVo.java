@@ -19,8 +19,10 @@ public class LoginResultVo extends BaseResultVo {
     private String mobilePhone;
     @SerializedName("RoleNames")
     private String roleNames;
+
     @SerializedName("PermissionCodeList")
     private String[] permissionCodeList;
+
 
     public String getUserID() {
         return UserID;

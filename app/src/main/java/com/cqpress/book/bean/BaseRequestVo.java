@@ -24,6 +24,14 @@ public class BaseRequestVo {
     @SerializedName("Timestamp")
     private long timestamp;
 
+    public String getRegisterCode() {
+        return registerCode;
+    }
+
+    public void setRegisterCode(String registerCode) {
+        this.registerCode = registerCode;
+    }
+
     public String sign() {
         this.sign = MD5Util.MD5Encode(appKey + appSecret + registerCode + getReqMethod() + getTimestamp(), "utf8");
         return this.sign;

@@ -199,11 +199,15 @@ public class StoreHouseLocationListActivity extends BaseActivity {
         final ScanUpLoadRequestVo.RequestData requestData = new ScanUpLoadRequestVo.RequestData();
         requestData.setDeviceID(AppPreferences.getString("registerCode"));
         //查找字符串
-        if (uiiStr.toLowerCase().lastIndexOf("ff") != -1) {
-            requestData.setPackageCode(uiiStr);
+        int length = uiiStr.length();
+
+        if (length > 24) {
+            String substring = uiiStr.substring(5, uiiStr.length() + 1);
+            commUII(substring, requestData);
         } else {
-            requestData.setEpc(uiiStr);
+            commUII(uiiStr, requestData);
         }
+
         requestData.setStockInDetailID(stockDetailId);
         requestData.setLocationId(locationId);
         requestData.setUserID(AppPreferences.getString("userId"));
@@ -220,7 +224,7 @@ public class StoreHouseLocationListActivity extends BaseActivity {
                     ScanUpLoadResultVo upLoadResultVo = response.body();
                     if (upLoadResultVo.getSurplusAmount() == 0) {
                         CommonUtils.make(StoreHouseLocationListActivity.this, "出库数量剩余数量为0");
-                        return ;
+                        return;
                     }
                     if (!upLoadResultVo.isError()) {
                         CommonUtils.make(StoreHouseLocationListActivity.this, "扫描成功");
@@ -234,6 +238,21 @@ public class StoreHouseLocationListActivity extends BaseActivity {
 
             }
         });
+    }
+
+    /**
+     * 判断是否是捆标和epc
+     *
+     * @param uiiStr
+     * @param requestData
+     */
+    private void commUII(String uiiStr, ScanUpLoadRequestVo.RequestData requestData) {
+        //查找字符串
+        if (uiiStr.toLowerCase().lastIndexOf("ff") != -1) {
+            requestData.setPackageCode(uiiStr);
+        } else {
+            requestData.setEpc(uiiStr);
+        }
     }
 
     private final Runnable accompainimentRunnable = new Runnable() {

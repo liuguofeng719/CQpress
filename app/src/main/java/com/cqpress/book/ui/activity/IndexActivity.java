@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 
 import com.cqpress.book.R;
 import com.cqpress.book.ui.base.BaseActivity;
+import com.cqpress.book.utils.AppPreferences;
+import com.cqpress.book.utils.CommonUtils;
 import com.cqpress.book.utils.ExitDoubleClick;
 
 import butterknife.Bind;
@@ -54,7 +56,9 @@ public class IndexActivity extends BaseActivity {
      */
     @OnClick(R.id.ly_book_setting)
     public void bookSetting() {
-        readyGo(SettingsActivity.class);
+        AppPreferences.putString("userId", "");
+        CommonUtils.make(this, getString(R.string.logout_message));
+        readyGoThenKill(LoginActivity.class);
     }
 
     @Override

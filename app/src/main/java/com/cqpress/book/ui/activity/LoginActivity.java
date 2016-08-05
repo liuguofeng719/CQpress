@@ -62,6 +62,15 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.tv_login_button)
     public void login() {
+        if (TextUtils.isEmpty(AppPreferences.getString("registerCode"))) {
+            CommonUtils.make(LoginActivity.this, "注册码不能为空");
+            return;
+        }
+        if (TextUtils.isEmpty(AppPreferences.getString("BASE_URL"))) {
+            CommonUtils.make(LoginActivity.this, "服务器地址不能为空");
+            return;
+        }
+
         mDialog = CommonUtils.showDialog(this, getString(R.string.common_loading_message));
         mDialog.show();
         if (NetUtils.isNetworkAvailable(LoginActivity.this)) {
@@ -101,6 +110,9 @@ public class LoginActivity extends BaseActivity {
                                         CommonUtils.dismiss(mDialog);
                                     }
                                 });
+                            } else {
+                                CommonUtils.make(LoginActivity.this, response.message());
+                                CommonUtils.dismiss(mDialog);
                             }
                         } else {
                             TLog.e(TAG_LOG, response.message());
