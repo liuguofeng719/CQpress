@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.cqpress.book.BookApplication;
 import com.cqpress.book.R;
 import com.cqpress.book.bean.StockInDetailVo;
-import com.cqpress.book.bean.StockOutRequestDetailVo;
+import com.cqpress.book.bean.StockInRequestDetailVo;
 import com.cqpress.book.bean.StockOutResultVo;
 import com.cqpress.book.uhf.ExceptionForToast;
 import com.cqpress.book.ui.adpater.base.ListViewDataAdapter;
@@ -67,7 +67,7 @@ public class StockInDocumentDetailsActivity extends BaseActivity {
 
     @Override
     protected void initViewsAndEvents() {
-        this.tv_header_title.setText(getString(R.string.book_out_header_detail_title));
+        this.tv_header_title.setText("入库详情");
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -126,7 +126,7 @@ public class StockInDocumentDetailsActivity extends BaseActivity {
 
     private void getStockDetail(String stockInId) {
         this.showLoading(getString(R.string.common_loading_message));
-        StockOutRequestDetailVo stockOutRequestVo = new StockOutRequestDetailVo();
+        StockInRequestDetailVo stockOutRequestVo = new StockInRequestDetailVo();
         stockOutRequestVo.setRequestData(stockInId);
         stockOutRequestVo.setReqMethod("AppGetStockInDocumentDetails");
         stockOutRequestVo.sign();

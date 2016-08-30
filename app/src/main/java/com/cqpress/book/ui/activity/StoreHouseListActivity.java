@@ -186,26 +186,26 @@ public class StoreHouseListActivity extends BaseActivity {
                                                     if (uii != null) {
                                                         trigTagAccompainiment();//开启扫描声音
                                                         final String uiiStr = DataTransfer.xGetString(uii.getBytes());
-                                                        if (uiiStr.length() > 24) {//判断扫描24位和28位
-                                                            String strUii = uiiStr.substring(4, uiiStr.length());
-                                                            String startStr = strUii.substring(0, 14);
-                                                            String verifyCode = strUii.substring(14, 15);
-                                                            String endStr = strUii.substring(15, strUii.length());
-                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
-                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
-                                                                CommonUtils.make(StoreHouseListActivity.this, "标签不是系统内标签");
-                                                                return;
-                                                            }
-                                                        } else {
-                                                            String startStr = uiiStr.substring(0, 14);
-                                                            String verifyCode = uiiStr.substring(14, 15);
-                                                            String endStr = uiiStr.substring(15, uiiStr.length());
-                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
-                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
-                                                                CommonUtils.make(StoreHouseListActivity.this, "标签不是系统内标签");
-                                                                return;
-                                                            }
-                                                        }
+//                                                        if (uiiStr.length() > 24) {//判断扫描24位和28位
+//                                                            String strUii = uiiStr.substring(4, uiiStr.length());
+//                                                            String startStr = strUii.substring(0, 14);
+//                                                            String verifyCode = strUii.substring(14, 15);
+//                                                            String endStr = strUii.substring(15, strUii.length());
+//                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
+//                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
+//                                                                CommonUtils.make(StoreHouseListActivity.this, "标签不是系统内标签");
+//                                                                return;
+//                                                            }
+//                                                        } else {
+//                                                            String startStr = uiiStr.substring(0, 14);
+//                                                            String verifyCode = uiiStr.substring(14, 15);
+//                                                            String endStr = uiiStr.substring(15, uiiStr.length());
+//                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
+//                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
+//                                                                CommonUtils.make(StoreHouseListActivity.this, "标签不是系统内标签");
+//                                                                return;
+//                                                            }
+//                                                        }
                                                         if (TextUtils.isEmpty(hashMap.get(uiiStr))) {
                                                             hashMap.put(uiiStr, uiiStr);
                                                             //扫描数量
@@ -214,10 +214,10 @@ public class StoreHouseListActivity extends BaseActivity {
                                                                 if (uiiStr.length() > 24) {//判断扫描24位和28位
                                                                     String strUii = uiiStr.substring(4, uiiStr.length());
                                                                     if (strUii.indexOf("f") != -1) {
-                                                                        scanCount = Integer.parseInt(strUii.substring(strUii.length() - 2, strUii.length() - 1));
+                                                                        scanCount = Integer.parseInt(strUii.substring(strUii.length() - 2, strUii.length() - 1),16);
                                                                     }
                                                                 } else {
-                                                                    scanCount = Integer.parseInt(uiiStr.substring(uiiStr.length() - 2, uiiStr.length() - 1));
+                                                                    scanCount = Integer.parseInt(uiiStr.substring(uiiStr.length() - 2, uiiStr.length() - 1),16);
                                                                 }
                                                             }
 
@@ -280,8 +280,9 @@ public class StoreHouseListActivity extends BaseActivity {
                                                                     TLog.d(TAG_LOG, response.message());
                                                                     if (response.isSuccess() && response.body() != null) {
                                                                         ScanUpLoadResultVo upLoadResultVo = response.body();
+                                                                        CommonUtils.make(StoreHouseListActivity.this,"返回数据==="+upLoadResultVo.getSurplusAmount());
                                                                         if (upLoadResultVo.getSurplusAmount() == 0) {
-                                                                            CommonUtils.make(StoreHouseListActivity.this, "出库数量剩余数量为0");
+                                                                            CommonUtils.make(StoreHouseListActivity.this, "入库完成");
                                                                             return;
                                                                         }
                                                                     }
@@ -425,7 +426,7 @@ public class StoreHouseListActivity extends BaseActivity {
                 if (response.isSuccess() && response.body() != null) {
                     ScanUpLoadResultVo upLoadResultVo = response.body();
                     if (upLoadResultVo.getSurplusAmount() == 0) {
-                        CommonUtils.make(StoreHouseListActivity.this, "出库数量剩余数量为0");
+                        CommonUtils.make(StoreHouseListActivity.this, "入库数量为0");
                         return;
                     }
                 }

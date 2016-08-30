@@ -1,6 +1,7 @@
 package com.cqpress.book.ui.activity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -79,6 +80,12 @@ public class IndexActivity extends BaseActivity {
     @Override
     protected void initViewsAndEvents() {
         ly_book_out.requestFocus();
+        if (!TextUtils.isEmpty(AppPreferences.getString("customerType"))) {
+            String customerType = AppPreferences.getString("customerType");
+            if ("1".equals(customerType)) {
+                ly_book_in.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override

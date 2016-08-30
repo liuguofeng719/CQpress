@@ -10,6 +10,17 @@ public class RegisterAppResultVo extends BaseResultVo {
     @SerializedName("Data")
     private String data;
 
+    @SerializedName("CustomerType")
+    private String customerType;
+
+    public String getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(String customerType) {
+        this.customerType = customerType;
+    }
+
     public String getData() {
         return data;
     }

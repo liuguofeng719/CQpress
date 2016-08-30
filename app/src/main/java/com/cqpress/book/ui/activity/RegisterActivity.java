@@ -56,9 +56,11 @@ public class RegisterActivity extends BaseActivity {
                     if (!resultVo.isError()) {
                         CommonUtils.make(RegisterActivity.this, "注册码注册成功");
                         AppPreferences.putString("registerCode", resultVo.getData());
+                        AppPreferences.putString("registerCodeNumber", editRegister.getText().toString());
+                        AppPreferences.putString("customerType", resultVo.getCustomerType());
                         readyGoThenKill(LoginActivity.class);
                     } else {
-                        CommonUtils.make(RegisterActivity.this, "注册码已经注册");
+                        CommonUtils.make(RegisterActivity.this, resultVo.getMessage());
                     }
                 }
             }
@@ -91,7 +93,7 @@ public class RegisterActivity extends BaseActivity {
     @Override
     protected void initViewsAndEvents() {
         if (!TextUtils.isEmpty(AppPreferences.getString("registerCode"))) {
-            editRegister.setText(AppPreferences.getString("registerCode"));
+            editRegister.setText(AppPreferences.getString("registerCodeNumber"));
         }
     }
 }

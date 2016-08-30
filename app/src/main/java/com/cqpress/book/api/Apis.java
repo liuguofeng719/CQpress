@@ -2,6 +2,7 @@ package com.cqpress.book.api;
 
 import com.cqpress.book.bean.BaseRequestVo;
 import com.cqpress.book.bean.BaseResultVo;
+import com.cqpress.book.bean.DataResultVo;
 import com.cqpress.book.bean.LoginRequestVo;
 import com.cqpress.book.bean.LoginResultVo;
 import com.cqpress.book.bean.RegisterAppRequestVo;
@@ -11,6 +12,7 @@ import com.cqpress.book.bean.ScanUpLoadResultVo;
 import com.cqpress.book.bean.StockDocumentCompleteRequestVo;
 import com.cqpress.book.bean.StockInDetailVo;
 import com.cqpress.book.bean.StockInDocumentVo;
+import com.cqpress.book.bean.StockInRequestDetailVo;
 import com.cqpress.book.bean.StockOutDetailVo;
 import com.cqpress.book.bean.StockOutRequestDetailVo;
 import com.cqpress.book.bean.StockOutRequestVo;
@@ -63,7 +65,7 @@ public interface Apis {
      * @return
      */
     @POST("AppGetStockInDocumentDetails")
-    Call<StockOutResultVo<StockInDetailVo>> appGetStockInDocumentDetails(@Body StockOutRequestDetailVo requestVo);
+    Call<StockOutResultVo<StockInDetailVo>> appGetStockInDocumentDetails(@Body StockInRequestDetailVo requestVo);
 
     /**
      * 扫描上报数据
@@ -123,6 +125,5 @@ public interface Apis {
      * @return
      */
     @POST("AppStockDocumentComplete")
-    Call<BaseResultVo> appStockDocumentComplete(@Body StockDocumentCompleteRequestVo requestVo);
-
+    Call<DataResultVo> appStockDocumentComplete(@Body StockDocumentCompleteRequestVo requestVo);
 }

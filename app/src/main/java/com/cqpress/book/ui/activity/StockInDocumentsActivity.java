@@ -8,7 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cqpress.book.R;
-import com.cqpress.book.bean.BaseResultVo;
+import com.cqpress.book.bean.DataResultVo;
 import com.cqpress.book.bean.StockDocumentCompleteRequestVo;
 import com.cqpress.book.bean.StockInDocumentVo;
 import com.cqpress.book.bean.StockOutRequestVo;
@@ -109,15 +109,17 @@ public class StockInDocumentsActivity extends BaseActivity {
                                 requestVo.setRequestData(requestData);
                                 requestVo.setReqMethod("AppStockDocumentComplete");
                                 requestVo.sign();
-                                Call<BaseResultVo> resultVoCall = getApis().appStockDocumentComplete(requestVo).clone();
-                                resultVoCall.enqueue(new Callback<BaseResultVo>() {
+                                Call<DataResultVo> resultVoCall = getApis().appStockDocumentComplete(requestVo).clone();
+                                resultVoCall.enqueue(new Callback<DataResultVo>() {
                                     @Override
-                                    public void onResponse(Response<BaseResultVo> response, Retrofit retrofit) {
+                                    public void onResponse(Response<DataResultVo> response, Retrofit retrofit) {
                                         if (response.isSuccess() && response.body() != null) {
-                                            BaseResultVo baseResultVo = response.body();
-                                            if (baseResultVo.getErrCode() == 0) {
+                                            DataResultVo baseResultVo = response.body();
+                                            if (baseResultVo.isData()) {
                                                 CommonUtils.make(StockInDocumentsActivity.this, "入库成功");
                                                 getStock();
+                                            }else{
+                                                CommonUtils.make(StockInDocumentsActivity.this, baseResultVo.getMessage());
                                             }
                                         }
                                     }

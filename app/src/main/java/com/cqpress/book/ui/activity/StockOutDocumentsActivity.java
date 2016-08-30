@@ -9,7 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cqpress.book.R;
-import com.cqpress.book.bean.BaseResultVo;
+import com.cqpress.book.bean.DataResultVo;
 import com.cqpress.book.bean.StockDocumentCompleteRequestVo;
 import com.cqpress.book.bean.StockOutRequestVo;
 import com.cqpress.book.bean.StockOutResultVo;
@@ -74,6 +74,8 @@ public class StockOutDocumentsActivity extends BaseActivity {
                     TextView tv_stock_out_time;
                     TextView tv_stock_in_complete;
                     TextView tv_show_detail;
+                    TextView tv_inspect_complete;
+                    TextView tv_inspect;
 
                     @Override
                     public View createView(LayoutInflater layoutInflater) {
@@ -82,6 +84,8 @@ public class StockOutDocumentsActivity extends BaseActivity {
                         tv_stock_out_time = ButterKnife.findById(view, R.id.tv_stock_out_time);
                         tv_stock_in_complete = ButterKnife.findById(view, R.id.tv_stock_in_complete);
                         tv_show_detail = ButterKnife.findById(view, R.id.tv_show_detail);
+                        tv_inspect_complete = ButterKnife.findById(view, R.id.tv_inspect_complete);
+                        tv_inspect = ButterKnife.findById(view, R.id.tv_inspect);
                         return view;
                     }
 
@@ -106,19 +110,21 @@ public class StockOutDocumentsActivity extends BaseActivity {
                                 StockDocumentCompleteRequestVo requestVo = new StockDocumentCompleteRequestVo();
                                 StockDocumentCompleteRequestVo.RequestData requestData = new StockDocumentCompleteRequestVo.RequestData();
                                 requestData.setDocumentID(v.getTag().toString());
-                                requestData.setStockType(1);//出库类型
+                                requestData.setStockType(1);//出库类型 2、核查
                                 requestVo.setReqMethod("AppStockDocumentComplete");
                                 requestVo.setRequestData(requestData);
                                 requestVo.sign();
-                                Call<BaseResultVo> resultVoCall = getApis().appStockDocumentComplete(requestVo).clone();
-                                resultVoCall.enqueue(new Callback<BaseResultVo>() {
+                                Call<DataResultVo> resultVoCall = getApis().appStockDocumentComplete(requestVo).clone();
+                                resultVoCall.enqueue(new Callback<DataResultVo>() {
                                     @Override
-                                    public void onResponse(Response<BaseResultVo> response, Retrofit retrofit) {
+                                    public void onResponse(Response<DataResultVo> response, Retrofit retrofit) {
                                         if (response.isSuccess() && response.body() != null) {
-                                            BaseResultVo baseResultVo = response.body();
-                                            if (baseResultVo.getErrCode() == 0) {
-                                                CommonUtils.make(StockOutDocumentsActivity.this, "出库成功");
+                                            DataResultVo baseResultVo = response.body();
+                                            if (baseResultVo.isData()) {
+                                                CommonUtils.make(StockOutDocumentsActivity.this, "出库完成");
                                                 getStock();
+                                            } else {
+                                                CommonUtils.make(StockOutDocumentsActivity.this, baseResultVo.getMessage());
                                             }
                                         }
                                     }
@@ -135,10 +141,61 @@ public class StockOutDocumentsActivity extends BaseActivity {
                             public void onClick(View v) {
                                 String stockOutId = tv_stock_out_num.getTag().toString();
                                 Bundle bundle = new Bundle();
+                                bundle.putString("title", "拣货详情");
+                                bundle.putString("type", "1");//出库
                                 bundle.putString("stockOutId", stockOutId);
                                 readyGo(StockOutDocumentDetailsActivity.class, bundle);
                             }
                         });
+
+                        //核查完成
+                        tv_inspect_complete.setTag(itemData.getStockOutID());
+                        tv_inspect_complete.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                StockDocumentCompleteRequestVo requestVo = new StockDocumentCompleteRequestVo();
+                                StockDocumentCompleteRequestVo.RequestData requestData = new StockDocumentCompleteRequestVo.RequestData();
+                                requestData.setDocumentID(v.getTag().toString());
+                                requestData.setStockType(2);//出库类型 2、核查
+                                requestVo.setReqMethod("AppStockDocumentComplete");
+                                requestVo.setRequestData(requestData);
+                                requestVo.sign();
+                                Call<DataResultVo> resultVoCall = getApis().appStockDocumentComplete(requestVo).clone();
+                                resultVoCall.enqueue(new Callback<DataResultVo>() {
+                                    @Override
+                                    public void onResponse(Response<DataResultVo> response, Retrofit retrofit) {
+                                        if (response.isSuccess() && response.body() != null) {
+                                            DataResultVo baseResultVo = response.body();
+                                             if (baseResultVo.isData()) {
+                                                CommonUtils.make(StockOutDocumentsActivity.this, "核查完成");
+                                                getStock();
+                                            } else {
+                                                CommonUtils.make(StockOutDocumentsActivity.this, baseResultVo.getMessage());
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Throwable t) {
+
+                                    }
+                                });
+                            }
+                        });
+
+                        //核查
+                        tv_inspect.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String stockOutId = tv_stock_out_num.getTag().toString();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("title", "核查详情");
+                                bundle.putString("type", "2");//核查
+                                bundle.putString("stockOutId", stockOutId);
+                                readyGo(StockOutDocumentDetailsActivity.class, bundle);
+                            }
+                        });
+
                     }
                 };
             }

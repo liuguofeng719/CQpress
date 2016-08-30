@@ -26,7 +26,7 @@
     <string name="book_button_text_out">开始扫描</string>
     <string name="book_button_text_stop">停止扫描</string>
     <string name="book_button_text_in">开始扫描</string>
-    <string name="storage_location">选择库位</string>
+    <string name="storage_location">选择位置</string>
     <string name="idInventoryFinished_Colon">扫描完成</string>
     <string name="idInventoryFinished">扫描完成</string>
     <string name="idInventoryStopped__PleaseMoveTheTagAndTryAgain">扫描已停止,或者重试再试</string>

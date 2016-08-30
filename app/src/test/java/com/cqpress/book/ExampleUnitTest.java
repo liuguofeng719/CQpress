@@ -50,10 +50,19 @@ public class ExampleUnitTest {
 
         //11112222333310 9 00003B000 校验码为9
         //1111222233331000003B000
-        String uiid = "11112222333310900003B000";
-        String startStr = uiid.substring(0, 14);
-        String verifyCode = uiid.substring(14, 15);
-        String endStr = uiid.substring(15, uiid.length());
+        String uiiStr = "9787111495737070000010AF";
+        if (uiiStr.length() > 24) {//判断扫描24位和28位
+            String strUii = uiiStr.substring(4, uiiStr.length());
+            if (strUii.indexOf("f") != -1) {
+                System.out.println(Integer.parseInt(strUii.substring(strUii.length() - 2, strUii.length() - 1),16));
+            }
+        } else {
+            System.out.println("===="+ Integer.parseInt(uiiStr.substring(uiiStr.length() - 2, uiiStr.length() - 1),16));
+        }
+
+        String startStr = uiiStr.substring(0, 14);
+        String verifyCode = uiiStr.substring(14, 15);
+        String endStr = uiiStr.substring(15, uiiStr.length());
         int lost = accumulation((startStr + endStr).toCharArray());
         System.out.println(lost == Integer.parseInt(verifyCode));
 

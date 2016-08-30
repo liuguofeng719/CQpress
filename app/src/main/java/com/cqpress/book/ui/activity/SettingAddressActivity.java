@@ -32,7 +32,8 @@ public class SettingAddressActivity extends BaseActivity {
             CommonUtils.make(this, "请输入服务器地址");
             return;
         }
-        AppPreferences.putString("BASE_URL", editRegister.getText().toString());
+        AppPreferences.putString("BASE_URL", "http://" + editRegister.getText().toString() + "/SubDeviceService.svc/rest/");
+        AppPreferences.putString("BASE_URL_LOCATION", editRegister.getText().toString());
         CommonUtils.make(this, "服务器地址设置成功");
         readyGoThenKill(LoginActivity.class);
     }
@@ -58,7 +59,7 @@ public class SettingAddressActivity extends BaseActivity {
     @Override
     protected void initViewsAndEvents() {
         if (!TextUtils.isEmpty(AppPreferences.getString("BASE_URL"))) {
-            editRegister.setText(AppPreferences.getString("BASE_URL"));
+            editRegister.setText(AppPreferences.getString("BASE_URL_LOCATION"));
         }
     }
 }

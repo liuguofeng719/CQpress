@@ -2,12 +2,11 @@ package com.cqpress.book.ui.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +51,10 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
     TextView tv_header_title;
     @Bind(R.id.radio_scan)
     RadioGroup radio_scan;
+
+    @Bind(R.id.tv_book_epc)
+    RadioButton tv_book_epc;
+
     @Bind(R.id.lv_stock_list)
     ListView lv_stock_list;
 
@@ -60,7 +63,6 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
     private final Accompaniment accompaniment = Accompaniment.newInstanceOfResource(this, R.raw.tag_inventoried);
     private ListViewDataAdapter<StockOutDetailVo> listViewDataAdapter;
     private Handler accompainimentsHandler;
-    private MyHandler myhandler = new MyHandler();
 
     @OnClick(R.id.iv_back)
     public void back() {
@@ -84,6 +86,15 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
 
     @Override
     protected void initViewsAndEvents() {
+
+        if (!TextUtils.isEmpty(AppPreferences.getString("customerType"))) {
+            String customerType = AppPreferences.getString("customerType");
+            if ("1".equals(customerType)) {
+                tv_book_epc.setVisibility(View.INVISIBLE);
+            }
+        }
+
+
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -101,7 +112,7 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
         });
         accompainimentsHandler = new Handler();
 
-        this.tv_header_title.setText(getString(R.string.book_out_header_detail_title));
+        this.tv_header_title.setText(extras.getString("title"));
         listViewDataAdapter = new ListViewDataAdapter<StockOutDetailVo>(new ViewHolderCreator<StockOutDetailVo>() {
 
             @Override
@@ -132,7 +143,11 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
                         tv_book_name.setText(itemData.getBook().getBookName());
                         tv_book_isbn.setText(itemData.getBook().getIsbn());
                         tv_book_scan.setTag(itemData.getDetailID() + "," + itemData.getAmount());
-                        tv_book_amount.setText("出库" + itemData.getAmount() + "本");
+                        if ("2".equals(extras.getString("type"))) {
+                            tv_book_amount.setText("已核查" + itemData.getAmount() + "本");
+                        } else {
+                            tv_book_amount.setText("出库" + itemData.getAmount() + "本");
+                        }
                         tv_book_scan.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(final View v) {
@@ -140,138 +155,166 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
                                 if (tv_book_scan.getText().toString().equals("开始扫描")) {
                                     tv_book_scan.setText(getString(R.string.book_button_text_stop));
                                     final String[] vTag = v.getTag().toString().split(",");
+                                    final String detailId = vTag[0];//出库详情编码
+                                    final String outAmount = vTag[1];//出库数量
+
                                     BookApplication.uhfInterfaceAsModelC().startInventorySingleTag(
                                             new StUhf.InterrogatorModelC.UmcOnNewUiiInventoried() {
                                                 @Override
                                                 public void onNewTagInventoried(StUhf.UII uii) {
-                                                    if (uii != null) {
-                                                        trigTagAccompainiment();//开启扫描声音
+                                                    try {
+                                                        if (uii != null) {
+                                                            trigTagAccompainiment();//开启扫描声音
 
-                                                        final String uiiStr = DataTransfer.xGetString(uii.getBytes());
-                                                        if (uiiStr.length() > 24) {//判断扫描24位和28位
-                                                            String strUii = uiiStr.substring(4, uiiStr.length());
-                                                            String startStr = strUii.substring(0, 14);
-                                                            String verifyCode = strUii.substring(14, 15);
-                                                            String endStr = strUii.substring(15, strUii.length());
-                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
-                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
-                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, "标签不是系统内标签");
-                                                                return;
-                                                            }
-                                                        } else {
-                                                            String startStr = uiiStr.substring(0, 14);
-                                                            String verifyCode = uiiStr.substring(14, 15);
-                                                            String endStr = uiiStr.substring(15, uiiStr.length());
-                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
-                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
-                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, "标签不是系统内标签");
-                                                                return;
-                                                            }
-                                                        }
-                                                        if (TextUtils.isEmpty(hashMap.get(uiiStr))) {
-                                                            hashMap.put(uiiStr, uiiStr);
-                                                            //扫描数量
-                                                            int scanCount = 0;
-                                                            if (isPackage) {
-                                                                if (uiiStr.length() > 24) {//判断扫描24位和28位
-                                                                    String strUii = uiiStr.substring(4, uiiStr.length());
-                                                                    if (strUii.indexOf("f") != -1) {
-                                                                        scanCount = Integer.parseInt(strUii.substring(strUii.length() - 2, strUii.length() - 1));
-                                                                    }
-                                                                } else {
-                                                                    scanCount = Integer.parseInt(uiiStr.substring(uiiStr.length() - 2, uiiStr.length() - 1));
-                                                                }
-                                                            }
-
-                                                            //设置扫描数量
-                                                            final int finalScanCount = scanCount;
+                                                            final String uiiStr = DataTransfer.xGetString(uii.getBytes());
                                                             runOnUiThread(new Runnable() {
                                                                 @Override
                                                                 public void run() {
-                                                                    if (tv_scan_num.getTag() != null) {
-                                                                        int anInt = Integer.parseInt(tv_scan_num.getTag().toString());
-                                                                        int totalCount;
-                                                                        if (isPackage) {
-                                                                            totalCount = finalScanCount + anInt;
-                                                                        } else {
-                                                                            totalCount = anInt + 1;
-                                                                        }
-                                                                        tv_scan_num.setTag(totalCount);
-                                                                        tv_scan_num.setText("扫描" + totalCount + "本");
+                                                                    CommonUtils.make(StockOutDocumentDetailsActivity.this, uiiStr);
+                                                                }
+                                                            });
+//                                                        if (uiiStr.length() > 24) {//判断扫描24位和28位
+//                                                            String strUii = uiiStr.substring(4, uiiStr.length());
+//                                                            String startStr = strUii.substring(0, 14);
+//                                                            String verifyCode = strUii.substring(14, 15);
+//                                                            String endStr = strUii.substring(15, strUii.length());
+//                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
+//                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
+//                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, "标签不是系统内标签");
+//                                                                return;
+//                                                            }
+//                                                        } else {
+//                                                            String startStr = uiiStr.substring(0, 14);
+//                                                            String verifyCode = uiiStr.substring(14, 15);
+//                                                            String endStr = uiiStr.substring(15, uiiStr.length());
+//                                                            int accumulation = DataTransfer.accumulation((startStr + endStr).toCharArray());
+//                                                            if (Integer.parseInt("" + verifyCode, 16) != accumulation) {
+//                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, "标签不是系统内标签");
+//                                                                return;
+//                                                            }
+//                                                        }
+                                                            if (TextUtils.isEmpty(hashMap.get(uiiStr))) {
+                                                                hashMap.put(uiiStr, uiiStr);
+//                                                                //扫描数量
+//                                                                int scanCount = 0;
+//                                                                if (isPackage) {
+//                                                                    if (uiiStr.length() > 24) {//判断扫描24位和28位
+//                                                                        String strUii = uiiStr.substring(4, uiiStr.length());
+//                                                                        if (strUii.indexOf("f") != -1) {
+//                                                                            scanCount = Integer.parseInt(strUii.substring(strUii.length() - 2, strUii.length() - 1), 16);
+//                                                                        }
+//                                                                    } else {
+//                                                                        scanCount = Integer.parseInt(uiiStr.substring(uiiStr.length() - 2, uiiStr.length() - 1), 16);
+//                                                                    }
+//                                                                }
+//
+//                                                                //设置扫描数量
+//                                                                final int finalScanCount = scanCount;
+//                                                                runOnUiThread(new Runnable() {
+//                                                                    @Override
+//                                                                    public void run() {
+//                                                                        if (tv_scan_num.getTag() != null) {
+//                                                                            int anInt = Integer.parseInt(tv_scan_num.getTag().toString());
+//                                                                            int totalCount;
+//                                                                            if (isPackage) {
+//                                                                                totalCount = finalScanCount + anInt;
+//                                                                            } else {
+//                                                                                totalCount = anInt + 1;
+//                                                                            }
+//                                                                            tv_scan_num.setTag(totalCount);
+//                                                                            tv_scan_num.setText("扫描" + totalCount + "本");
+//                                                                        } else {
+//                                                                            if (isPackage) {
+//                                                                                tv_scan_num.setTag(finalScanCount);
+//                                                                                tv_scan_num.setText("扫描" + finalScanCount + "本");
+//                                                                            } else {
+//                                                                                tv_scan_num.setTag(1);
+//                                                                                tv_scan_num.setText("扫描" + 1 + "本");
+//                                                                            }
+//                                                                        }
+//                                                                    }
+//                                                                });
+
+                                                                ScanUpLoadRequestVo requestVo = new ScanUpLoadRequestVo();
+                                                                final ScanUpLoadRequestVo.RequestData requestData = new ScanUpLoadRequestVo.RequestData();
+                                                                requestData.setDeviceID(AppPreferences.getString("registerCode"));//获取设备ID
+
+                                                                //修复24 或者大于24的捆标和书标编码
+                                                                int length = uiiStr.length();
+                                                                if (length > 24) {
+                                                                    String substring = uiiStr.substring(4, uiiStr.length());
+                                                                    if (isPackage) {
+                                                                        requestData.setPackageCode(substring);
                                                                     } else {
-                                                                        if (isPackage) {
-                                                                            tv_scan_num.setTag(finalScanCount);
-                                                                            tv_scan_num.setText("扫描" + finalScanCount + "本");
-                                                                        } else {
-                                                                            tv_scan_num.setTag(1);
-                                                                            tv_scan_num.setText("扫描" + 1 + "本");
-                                                                        }
+                                                                        requestData.setEpc(substring);
+                                                                    }
+                                                                } else {
+                                                                    if (isPackage) {
+                                                                        requestData.setPackageCode(uiiStr);
+                                                                    } else {
+                                                                        requestData.setEpc(uiiStr);
                                                                     }
                                                                 }
-                                                            });
 
-                                                            ScanUpLoadRequestVo requestVo = new ScanUpLoadRequestVo();
-                                                            final ScanUpLoadRequestVo.RequestData requestData = new ScanUpLoadRequestVo.RequestData();
-                                                            requestData.setDeviceID(AppPreferences.getString("registerCode"));//获取设备ID
+                                                                requestData.setStockOutDetailID(detailId);
+                                                                requestData.setUserID(AppPreferences.getString("userId"));
+                                                                if ("1".equals(extras.getString("type"))) {
+                                                                    requestData.setStockType("1");//拣货出库
+                                                                } else {
+                                                                    requestData.setStockType("2");//核查
+                                                                }
 
-                                                            //修复24 或者大于24的捆标和书标编码
-                                                            int length = uiiStr.length();
-                                                            if (length > 24) {
-                                                                String substring = uiiStr.substring(4, uiiStr.length());
-                                                                if (isPackage) {
-                                                                    requestData.setPackageCode(substring);
-                                                                } else {
-                                                                    requestData.setEpc(substring);
-                                                                }
-                                                            } else {
-                                                                if (isPackage) {
-                                                                    requestData.setPackageCode(uiiStr);
-                                                                } else {
-                                                                    requestData.setEpc(uiiStr);
-                                                                }
+                                                                requestVo.setRequestData(requestData);
+                                                                requestVo.setReqMethod("AppScanResultUpLoad");
+                                                                requestVo.sign();
+                                                                Call<ScanUpLoadResultVo> scanUpLoadResultVoCall = getApis().appScanResultUpLoad(requestVo).clone();
+                                                                scanUpLoadResultVoCall.enqueue(new Callback<ScanUpLoadResultVo>() {
+                                                                    @Override
+                                                                    public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
+                                                                        TLog.d(TAG_LOG, response.message());
+                                                                        if (response.isSuccess() && response.body() != null) {
+                                                                            final ScanUpLoadResultVo upLoadResultVo = response.body();
+                                                                            if (upLoadResultVo.getSurplusAmount() == 0) {
+                                                                                BookApplication.stop();
+                                                                                getStockDetail(extras.getString("stockOutId"));//如果扫描完成重新拉取数据
+                                                                            } else {
+                                                                                final int lastAmount = Integer.parseInt(outAmount) - upLoadResultVo.getSurplusAmount();
+                                                                                runOnUiThread(new Runnable() {
+                                                                                    @Override
+                                                                                    public void run() {
+                                                                                        tv_scan_num.setText("扫描" + lastAmount + "本");
+                                                                                    }
+                                                                                });
+                                                                                runOnUiThread(new Runnable() {
+                                                                                    @Override
+                                                                                    public void run() {
+                                                                                        tv_number.setText("剩余" + upLoadResultVo.getSurplusAmount() + "本");
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onFailure(final Throwable t) {
+                                                                        runOnUiThread(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, t.getMessage());
+                                                                            }
+                                                                        });
+
+                                                                    }
+                                                                });
                                                             }
-
-                                                            requestData.setStockOutDetailID(vTag[0]);
-                                                            requestData.setUserID(AppPreferences.getString("userId"));
-                                                            requestData.setStockType("1");//出库
-                                                            requestVo.setRequestData(requestData);
-                                                            requestVo.setReqMethod("AppScanResultUpLoad");
-                                                            requestVo.sign();
-                                                            Call<ScanUpLoadResultVo> scanUpLoadResultVoCall = getApis().appScanResultUpLoad(requestVo).clone();
-                                                            scanUpLoadResultVoCall.enqueue(new Callback<ScanUpLoadResultVo>() {
-                                                                @Override
-                                                                public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
-                                                                    TLog.d(TAG_LOG, response.message());
-                                                                    if (response.isSuccess() && response.body() != null) {
-                                                                        ScanUpLoadResultVo upLoadResultVo = response.body();
-                                                                        if (upLoadResultVo.getSurplusAmount() == 0) {
-                                                                            BookApplication.stop();
-                                                                            getStockDetail(extras.getString("stockOutId"));//如果扫描完成重新拉取数据
-                                                                        } else {
-                                                                            final int lastAmount = Integer.parseInt(vTag[1]) - upLoadResultVo.getSurplusAmount();
-                                                                            runOnUiThread(new Runnable() {
-                                                                                @Override
-                                                                                public void run() {
-                                                                                    tv_number.setText("剩余" + lastAmount + "本");
-                                                                                }
-                                                                            });
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                @Override
-                                                                public void onFailure(Throwable t) {
-
-                                                                }
-                                                            });
                                                         }
-//                                                        Message msg = Message.obtain();
-//                                                        Bundle data = new Bundle();
-//                                                        data.putString("stockOutId", vTag[0]);
-//                                                        data.putString("uiiStr", uiiStr);
-//                                                        data.putInt("amount", Integer.parseInt(vTag[1]));
-//                                                        msg.setData(data);
-//                                                        myhandler.sendMessage(msg);
+                                                    } catch (final Exception e) {
+                                                        runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, e.getMessage());
+                                                            }
+                                                        });
                                                     }
                                                 }
 
@@ -337,82 +380,6 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
         });
     }
 
-    class MyHandler extends Handler {
-
-        public MyHandler() {
-        }
-
-        public MyHandler(Looper looper) {
-            super(looper);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg != null) {
-                Bundle msgData = msg.getData();
-                scanStockOut(msgData);
-            }
-        }
-    }
-
-    /**
-     * 扫描出库
-     *
-     * @param msgData
-     */
-    private void scanStockOut(Bundle msgData) {
-        String uiiStr = msgData.getString("uiiStr").trim();
-        String stockOutId = msgData.getString("stockOutId");
-        final int amount = msgData.getInt("amount");
-
-        ScanUpLoadRequestVo requestVo = new ScanUpLoadRequestVo();
-        final ScanUpLoadRequestVo.RequestData requestData = new ScanUpLoadRequestVo.RequestData();
-        requestData.setDeviceID(AppPreferences.getString("registerCode"));
-        int length = uiiStr.length();
-        if (length > 24) {
-            String substring = uiiStr.substring(4, uiiStr.length());
-            commUII(substring, requestData);
-        } else {
-            commUII(uiiStr, requestData);
-        }
-        requestData.setStockOutDetailID(stockOutId);
-        requestData.setUserID(AppPreferences.getString("userId"));
-        requestData.setStockType("1");//出库
-        requestVo.setRequestData(requestData);
-        requestVo.setReqMethod("AppScanResultUpLoad");
-        requestVo.sign();
-        Call<ScanUpLoadResultVo> scanUpLoadResultVoCall = getApis().appScanResultUpLoad(requestVo).clone();
-        scanUpLoadResultVoCall.enqueue(new Callback<ScanUpLoadResultVo>() {
-            @Override
-            public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
-                TLog.d(TAG_LOG, response.message());
-                if (response.isSuccess() && response.body() != null) {
-                    ScanUpLoadResultVo upLoadResultVo = response.body();
-                    if (upLoadResultVo.getSurplusAmount() == 0) {
-                        BookApplication.stop();
-//                        CommonUtils.make(StockOutDocumentDetailsActivity.this, "出库数量剩余数量为0");
-                        getStockDetail(extras.getString("stockOutId"));//如果扫描完成重新拉取数据
-                        return;
-                    } else {
-                        final int lastAmount = amount - upLoadResultVo.getSurplusAmount();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                tv_number.setText("剩余数量" + lastAmount + "本");
-                            }
-                        });
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        });
-    }
-
     /**
      * 判断是否是捆标和epc
      *
@@ -453,7 +420,14 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
     private void getStockDetail(String stockId) {
         this.showLoading(getString(R.string.common_loading_message));
         StockOutRequestDetailVo stockOutRequestVo = new StockOutRequestDetailVo();
-        stockOutRequestVo.setRequestData(stockId);
+        StockOutRequestDetailVo.RequestData requestData = new StockOutRequestDetailVo.RequestData();
+        if ("2".equals(extras.getString("type"))) {
+            requestData.setAduit(true);//获取核查列表详情
+        } else {
+            requestData.setAduit(false);//获取拣货列表详情
+        }
+        requestData.setStockOutDocmentID(stockId);
+        stockOutRequestVo.setRequestData(requestData);
         stockOutRequestVo.setReqMethod("AppGetStockOutDocumentDetails");
         stockOutRequestVo.sign();
         Call<StockOutResultVo<StockOutDetailVo>> storeHouse = getApis().appGetStockOutDocumentDetails(stockOutRequestVo).clone();
