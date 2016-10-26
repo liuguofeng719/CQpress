@@ -17,6 +17,16 @@ public class StockInDetailVo {
     private String detailID;
     @SerializedName("StockInID")
     private String stockInID;
+    @SerializedName("ScanAmount")
+    private String scanAmount;
+
+    public String getScanAmount() {
+        return scanAmount;
+    }
+
+    public void setScanAmount(String scanAmount) {
+        this.scanAmount = scanAmount;
+    }
 
     public static class Book {
         @SerializedName("Author")

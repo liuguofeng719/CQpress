@@ -144,9 +144,13 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
                         tv_book_isbn.setText(itemData.getBook().getIsbn());
                         tv_book_scan.setTag(itemData.getDetailID() + "," + itemData.getAmount());
                         if ("2".equals(extras.getString("type"))) {
-                            tv_book_amount.setText("已核查" + itemData.getAmount() + "本");
+                            tv_book_amount.setText("应核查" + itemData.getAmount() + "本");
+                            tv_scan_num.setText("已核查" + itemData.getAuditAmount() + "本");
+                            tv_number.setText("未核查0本");
                         } else {
-                            tv_book_amount.setText("出库" + itemData.getAmount() + "本");
+                            tv_book_amount.setText("应出库" + itemData.getAmount() + "本");
+                            tv_scan_num.setText("已扫描" + itemData.getScanAmount() + "本");
+                            tv_number.setText("未扫描0本");
                         }
                         tv_book_scan.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -167,12 +171,6 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
                                                             trigTagAccompainiment();//开启扫描声音
 
                                                             final String uiiStr = DataTransfer.xGetString(uii.getBytes());
-                                                            runOnUiThread(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    CommonUtils.make(StockOutDocumentDetailsActivity.this, uiiStr);
-                                                                }
-                                                            });
 //                                                        if (uiiStr.length() > 24) {//判断扫描24位和28位
 //                                                            String strUii = uiiStr.substring(4, uiiStr.length());
 //                                                            String startStr = strUii.substring(0, 14);
@@ -273,25 +271,28 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
                                                                     public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
                                                                         TLog.d(TAG_LOG, response.message());
                                                                         if (response.isSuccess() && response.body() != null) {
-                                                                            final ScanUpLoadResultVo upLoadResultVo = response.body();
+                                                                            ScanUpLoadResultVo upLoadResult = response.body();
+                                                                            if(upLoadResult.isError()){
+                                                                                CommonUtils.make(StockOutDocumentDetailsActivity.this, upLoadResult.getMessage());
+                                                                                return ;
+                                                                            }
+                                                                            final ScanUpLoadResultVo.Data upLoadResultVo = upLoadResult.getData();;
+                                                                            final int lastAmount = Integer.parseInt(outAmount) - upLoadResultVo.getSurplusAmount();
                                                                             if (upLoadResultVo.getSurplusAmount() == 0) {
                                                                                 BookApplication.stop();
-                                                                                getStockDetail(extras.getString("stockOutId"));//如果扫描完成重新拉取数据
-                                                                            } else {
-                                                                                final int lastAmount = Integer.parseInt(outAmount) - upLoadResultVo.getSurplusAmount();
-                                                                                runOnUiThread(new Runnable() {
-                                                                                    @Override
-                                                                                    public void run() {
-                                                                                        tv_scan_num.setText("扫描" + lastAmount + "本");
-                                                                                    }
-                                                                                });
-                                                                                runOnUiThread(new Runnable() {
-                                                                                    @Override
-                                                                                    public void run() {
-                                                                                        tv_number.setText("剩余" + upLoadResultVo.getSurplusAmount() + "本");
-                                                                                    }
-                                                                                });
                                                                             }
+                                                                            runOnUiThread(new Runnable() {
+                                                                                @Override
+                                                                                public void run() {
+                                                                                    if ("2".equals(extras.getString("type"))) {
+                                                                                        tv_scan_num.setText("已核查" + lastAmount + "本");
+                                                                                        tv_number.setText("未核查" + upLoadResultVo.getSurplusAmount() + "本");
+                                                                                    }else {
+                                                                                        tv_scan_num.setText("已扫描" + lastAmount + "本");
+                                                                                        tv_number.setText("未扫描" + upLoadResultVo.getSurplusAmount() + "本");
+                                                                                    }
+                                                                                }
+                                                                            });
                                                                         }
                                                                     }
 
@@ -327,8 +328,9 @@ public class StockOutDocumentDetailsActivity extends BaseActivity {
                                                                 case Success: {
                                                                     hashMap.clear();
                                                                     tv_scan_num.setTag(null);
-//                                                                    CommonUtils.make(StockOutDocumentDetailsActivity.this, getString(R.string.idInventoryFinished));
+                                                                    CommonUtils.make(StockOutDocumentDetailsActivity.this, getString(R.string.idInventoryFinished));
                                                                     tv_book_scan.setText(getString(R.string.book_button_text_out));
+                                                                    getStockDetail(extras.getString("stockOutId"));//如果扫描完成重新拉取数据
                                                                     break;
                                                                 }
                                                                 case RftcErrRevPwrLevTooHigh: {

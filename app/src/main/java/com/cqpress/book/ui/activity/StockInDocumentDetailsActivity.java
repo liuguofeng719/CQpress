@@ -90,6 +90,7 @@ public class StockInDocumentDetailsActivity extends BaseActivity {
                     TextView tv_book_isbn;
                     TextView tv_storage_location;
                     TextView tv_book_amount;
+                    TextView tv_book_scan_amount;
 
                     @Override
                     public View createView(LayoutInflater layoutInflater) {
@@ -99,6 +100,7 @@ public class StockInDocumentDetailsActivity extends BaseActivity {
                         tv_book_isbn = ButterKnife.findById(view, R.id.tv_book_isbn);
                         tv_storage_location = ButterKnife.findById(view, R.id.tv_storage_location);
                         tv_book_amount = ButterKnife.findById(view, R.id.tv_book_amount);
+                        tv_book_scan_amount = ButterKnife.findById(view, R.id.tv_book_scan_amount);
                         return view;
                     }
 
@@ -107,6 +109,7 @@ public class StockInDocumentDetailsActivity extends BaseActivity {
                         tv_book_name.setText(itemData.getBook().getBookName());
                         tv_book_isbn.setText(itemData.getBook().getIsbn());
                         tv_book_amount.setText("" + itemData.getAmount());
+                        tv_book_scan_amount.setText("" + itemData.getScanAmount());
                         tv_storage_location.setTag(itemData.getDetailID());
                         tv_storage_location.setOnClickListener(new View.OnClickListener() {
                             @Override

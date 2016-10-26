@@ -278,13 +278,19 @@ public class StoreHouseListActivity extends BaseActivity {
                                                                 @Override
                                                                 public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
                                                                     TLog.d(TAG_LOG, response.message());
-                                                                    if (response.isSuccess() && response.body() != null) {
-                                                                        ScanUpLoadResultVo upLoadResultVo = response.body();
-                                                                        CommonUtils.make(StoreHouseListActivity.this,"返回数据==="+upLoadResultVo.getSurplusAmount());
+                                                                    ScanUpLoadResultVo upLoadResult = response.body();
+                                                                    if (response.isSuccess() && upLoadResult != null) {
+                                                                        final ScanUpLoadResultVo.Data upLoadResultVo = upLoadResult.getData();;
                                                                         if (upLoadResultVo.getSurplusAmount() == 0) {
-                                                                            CommonUtils.make(StoreHouseListActivity.this, "入库完成");
-                                                                            return;
+                                                                            runOnUiThread(new Runnable() {
+                                                                                @Override
+                                                                                public void run() {
+                                                                                    CommonUtils.make(StoreHouseListActivity.this, "入库完成");
+                                                                                }
+                                                                            });
                                                                         }
+                                                                    }else{
+                                                                        CommonUtils.make(StoreHouseListActivity.this, upLoadResult.getMessage());
                                                                     }
                                                                 }
 
@@ -293,13 +299,6 @@ public class StoreHouseListActivity extends BaseActivity {
 
                                                                 }
                                                             });
-//                                                Message msg = Message.obtain();
-//                                                Bundle data = new Bundle();
-//                                                data.putString("locationId", tv_store_house_name.getTag().toString());
-//                                                data.putString("uiiStr", uiiStr);
-//                                                data.putString("stockDetailId", stockDetailId);
-//                                                msg.setData(data);
-//                                                myhandler.sendMessage(msg);
                                                         }
                                                     }
                                                 }
@@ -424,7 +423,8 @@ public class StoreHouseListActivity extends BaseActivity {
             public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
                 TLog.d(TAG_LOG, response.message());
                 if (response.isSuccess() && response.body() != null) {
-                    ScanUpLoadResultVo upLoadResultVo = response.body();
+                    ScanUpLoadResultVo upLoadResult = response.body();
+                    final ScanUpLoadResultVo.Data upLoadResultVo = upLoadResult.getData();;
                     if (upLoadResultVo.getSurplusAmount() == 0) {
                         CommonUtils.make(StoreHouseListActivity.this, "入库数量为0");
                         return;

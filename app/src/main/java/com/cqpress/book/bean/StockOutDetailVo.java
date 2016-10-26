@@ -17,6 +17,26 @@ public class StockOutDetailVo {
     private String detailID;
     @SerializedName("StockOutID")
     private String stockOutID;
+    @SerializedName("ScanAmount")
+    private int scanAmount;
+    @SerializedName("AuditAmount")
+    private int auditAmount;
+
+    public int getAuditAmount() {
+        return auditAmount;
+    }
+
+    public void setAuditAmount(int auditAmount) {
+        this.auditAmount = auditAmount;
+    }
+
+    public int getScanAmount() {
+        return scanAmount;
+    }
+
+    public void setScanAmount(int scanAmount) {
+        this.scanAmount = scanAmount;
+    }
 
     public static class Book {
         @SerializedName("Author")

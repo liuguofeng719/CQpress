@@ -221,12 +221,13 @@ public class StoreHouseLocationListActivity extends BaseActivity {
             public void onResponse(Response<ScanUpLoadResultVo> response, Retrofit retrofit) {
                 TLog.d(TAG_LOG, response.message());
                 if (response.isSuccess() && response.body() != null) {
-                    ScanUpLoadResultVo upLoadResultVo = response.body();
+                    ScanUpLoadResultVo upLoadResult = response.body();
+                    final ScanUpLoadResultVo.Data upLoadResultVo = upLoadResult.getData();;
                     if (upLoadResultVo.getSurplusAmount() == 0) {
                         CommonUtils.make(StoreHouseLocationListActivity.this, "出库数量剩余数量为0");
                         return;
                     }
-                    if (!upLoadResultVo.isError()) {
+                    if (!upLoadResult.isError()) {
                         CommonUtils.make(StoreHouseLocationListActivity.this, "扫描成功");
                     }
                 }
