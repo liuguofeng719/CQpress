@@ -86,6 +86,13 @@ public class StockOutDocumentsActivity extends BaseActivity {
                         tv_show_detail = ButterKnife.findById(view, R.id.tv_show_detail);
                         tv_inspect_complete = ButterKnife.findById(view, R.id.tv_inspect_complete);
                         tv_inspect = ButterKnife.findById(view, R.id.tv_inspect);
+
+                        String customerType = AppPreferences.getString("customerType");
+                        if (!"2".equals(customerType)) {
+                            tv_inspect_complete.setVisibility(View.GONE);
+                            tv_inspect.setVisibility(View.GONE);
+                        }
+
                         return view;
                     }
 
@@ -166,7 +173,7 @@ public class StockOutDocumentsActivity extends BaseActivity {
                                     public void onResponse(Response<DataResultVo> response, Retrofit retrofit) {
                                         if (response.isSuccess() && response.body() != null) {
                                             DataResultVo baseResultVo = response.body();
-                                             if (baseResultVo.isData()) {
+                                            if (baseResultVo.isData()) {
                                                 CommonUtils.make(StockOutDocumentsActivity.this, "核查完成");
                                                 getStock();
                                             } else {
@@ -201,6 +208,11 @@ public class StockOutDocumentsActivity extends BaseActivity {
             }
         });
         this.lv_stock_list.setAdapter(listViewDataAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getStock();
     }
 

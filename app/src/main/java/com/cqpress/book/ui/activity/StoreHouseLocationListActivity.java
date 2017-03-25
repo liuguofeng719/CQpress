@@ -164,6 +164,11 @@ public class StoreHouseLocationListActivity extends BaseActivity {
             }
         });
         this.lv_store_house_location.setAdapter(listViewDataAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getStoreHouseLocation(storeHouseId);
     }
 

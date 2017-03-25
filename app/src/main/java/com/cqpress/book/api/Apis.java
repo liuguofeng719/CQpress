@@ -33,7 +33,8 @@ import retrofit.http.POST;
  */
 public interface Apis {
 
-    String BASE_URL = "http://123.56.67.64:6789/SubDeviceService.svc/rest/";
+//    String BASE_URL = "http://123.56.67.64:6789/SubDeviceService.svc/rest/";
+    String BASE_URL = "http://192.168.2.107:9002/SubDeviceService.svc/rest/";
 
     /**
      * 获取出库订单

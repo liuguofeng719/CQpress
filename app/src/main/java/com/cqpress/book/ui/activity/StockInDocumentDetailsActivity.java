@@ -124,6 +124,11 @@ public class StockInDocumentDetailsActivity extends BaseActivity {
             }
         });
         this.lv_stock_list.setAdapter(listViewDataAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getStockDetail(extras.getString("stockInId"));
     }
 

@@ -145,6 +145,11 @@ public class StockInDocumentsActivity extends BaseActivity {
             }
         });
         this.lv_stock_list.setAdapter(listViewDataAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getStock();
     }
 
